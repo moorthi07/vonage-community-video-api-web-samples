@@ -372,10 +372,6 @@ if (armJoystick && armJoystickStick) {
 
     // Deadzone check
     if (distance > armMaxDistance / 4) {
-      // Normalize coordinates from -1.0 to 1.0
-      const normalizedX = ((newX - armCenterX) / armMaxDistance).toFixed(2);
-      const normalizedY = ((newY - armCenterY) / armMaxDistance).toFixed(2);
-      const armPosition = { x: normalizedX, y: normalizedY };
       // Normalize coordinates to -1.0 to 1.0 range
       const normalizedX = (newX - armCenterX) / armMaxDistance;
       const normalizedY = (newY - armCenterY) / armMaxDistance;
@@ -387,9 +383,6 @@ if (armJoystick && armJoystickStick) {
       const armPosition = `${panAngle},${tiltAngle}`;
 
       // Only publish if position has changed
-      if (JSON.stringify(armPosition) !== JSON.stringify(lastArmPosition)) {
-        console.log(`Arm Position: x=${armPosition.x}, y=${armPosition.y}`);
-        mqttClient.publish(ARM_MQTT_TOPIC, JSON.stringify(armPosition), MQTT_PUBLISH_OPTIONS, (err) => {
       if (armPosition !== lastArmPosition) {
         console.log(`Arm Angles: Pan=${panAngle}, Tilt=${tiltAngle}`);
         mqttClient.publish(ARM_MQTT_TOPIC, armPosition, MQTT_PUBLISH_OPTIONS, (err) => {
@@ -398,10 +391,8 @@ if (armJoystick && armJoystickStick) {
         lastArmPosition = armPosition;
       }
     } else if (lastArmPosition !== null) {
-      console.log('Arm Position: centered');
       console.log('Arm Angles: centered (90,90)');
       lastArmPosition = null;
-      mqttClient.publish(ARM_MQTT_TOPIC, JSON.stringify({ x: '0.00', y: '0.00' }), MQTT_PUBLISH_OPTIONS, (err) => {
       mqttClient.publish(ARM_MQTT_TOPIC, '90,90', MQTT_PUBLISH_OPTIONS, (err) => {
         if (err) console.error('MQTT arm publish error:', err);
       });
@@ -416,8 +407,6 @@ if (armJoystick && armJoystickStick) {
     armJoystickStick.setAttribute('cy', armCenterY);
 
     if (lastArmPosition !== null) {
-      console.log('Arm Position: centered');
-      mqttClient.publish(ARM_MQTT_TOPIC, JSON.stringify({ x: '0.00', y: '0.00' }), MQTT_PUBLISH_OPTIONS, (err) => {
       console.log('Arm Angles: centered (90,90)');
       mqttClient.publish(ARM_MQTT_TOPIC, '90,90', MQTT_PUBLISH_OPTIONS, (err) => {
         if (err) console.error('MQTT arm publish error:', err);
