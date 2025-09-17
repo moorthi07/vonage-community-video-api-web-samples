@@ -20,6 +20,13 @@ body, html {
     height: 100%;
     z-index: 10;
 }
+
+.video-placeholder {
+    background: linear-gradient(270deg, #1a1a1a, #2a2a2a, #1a1a1a);
+    background-size: 400% 400%;
+    animation: placeholder-animation 10s ease infinite;
+}
+
 #publisher-container {
     position: absolute;
     bottom: 10px;
@@ -120,4 +127,10 @@ body, html {
 }
 #publish-video-true {
     display: none;
+}
+
+@keyframes placeholder-animation {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }

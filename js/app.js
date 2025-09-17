@@ -15,6 +15,7 @@ function handleError(error) {
 
 function initializeSession() {
   const session = OT.initSession(applicationId, sessionId);
+  const subscriberEl = document.getElementById('subscriber');
 
   // Subscribe to a newly created stream
   session.on('streamCreated', (event) => {
@@ -23,7 +24,18 @@ function initializeSession() {
       width: '100%',
       height: '100%'
     };
-    session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    const subscriber = session.subscribe(event.stream, 'subscriber', subscriberOptions, handleError);
+    subscriber.on('videoEnabled', () => {
+      subscriberEl.classList.remove('video-placeholder');
+    });
+    subscriber.on('videoDisabled', () => {
+      subscriberEl.classList.add('video-placeholder');
+    });
+  });
+
+  session.on('streamDestroyed', (event) => {
+    console.log('Stream destroyed:', event.reason);
+    subscriberEl.classList.add('video-placeholder');
   });
 
   session.on('sessionDisconnected', (event) => {
@@ -94,6 +106,7 @@ const startContainer = document.getElementById('start-container');
 
 startBtn.addEventListener('click', () => {
   startContainer.style.display = 'none';
+  document.getElementById('publisher-container').style.display = 'block';
   // See the config.js file.
   if (APPLICATION_ID && TOKEN && SESSION_ID) {
     applicationId = APPLICATION_ID;
@@ -188,7 +201,7 @@ if (joystick && joystickStick) {
       return 'left';
     }
     if (degrees >= 225 && degrees < 315) {
-      return 'forward';
+      return 'forw';
     }
     return null;
   };
